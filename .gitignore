@@ -145,7 +145,7 @@ Temporary Items
 .apdisk
 
 ### Windows template
-# Windows thumbnail cache files
+# Windows thumbnail cache filesK
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
@@ -194,3 +194,4 @@ gen
 .nfs*
 
 build
+artifacts

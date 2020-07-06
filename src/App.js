@@ -1,23 +1,42 @@
-import React, {useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import styled from "styled-components";
-import {MdChevronLeft, MdFolder} from "react-icons/md";
-import './App.css';
+import {HOST_SERVER} from "./Constant";
+import {MdChevronLeft} from "react-icons/md";
+import querystring from "querystring";
+import Content from './components/Content'
+import Footer from './components/Footer'
+import BookmarkModal from './components/BookmarkForm'
+import browser from 'webextension-polyfill'
+import useTrigger from './module'
+
+function getBookmarkObject(id, title) {
+    return {
+        id: id,
+        title: title
+    }
+}
 
 function App() {
     const [bookmark, setBookmark] = useState()
-    const [bookmarkId, setBookmarkId] = useState([1])
-    const [title, setTitle] = useState(["Bookmarker"])
+    const [activateTab, setActiveTab] = useState({})
+    const [history, setHistory] = useState([getBookmarkObject(1, "Bookmarker")])
     const [loading, setLoading] = useState(() => !bookmark)
 
-    useEffect(() => setLoading(true), [bookmarkId])
+    const [openForm, setOpenForm] = useState(false)
+
+    const trigger = useTrigger()
+
+    useEffect(() => setOpenForm(trigger), [trigger])
+
+    useEffect(() => setLoading(true), [history])
 
     useEffect(() => {
         if (!loading && bookmark) return
         let isMounted = true;
-        fetch(`http://localhost:8080/api/get/detail/${bookmarkId[bookmarkId.length - 1]}`)
+        checkExist(isMounted);
+        fetch(`${HOST_SERVER}/api/get/detail/${history[history.length - 1].id}`)
             .then(res => res.json())
             .then(bookmarks => {
-                console.log(bookmarks)
                 if (isMounted) {
                     setBookmark(bookmarks)
                     setLoading(false)
@@ -29,66 +48,97 @@ function App() {
         }
     })
 
+    const checkExist = (isMount) => {
+        browser.tabs.query({active: true, currentWindow: true})
+            .then(tabs => {
+                const tab = tabs[0];
+                fetch(`${HOST_SERVER}/api/check?${querystring.stringify({
+                    title: tab.title,
+                    url: tab.url
+                })}`)
+                    .then(res => res.json())
+                    .then((result) => {
+                        if (isMount) {
+                            setActiveTab({
+                                id: result.length > 0 && result[0][0],
+                                title: tab.title,
+                                url: tab.url,
+                                parent: result.length > 0 && result[0][1]
+                            });
+                        }
+                    })
+                    .catch(err => console.error(err))
+            })
+            .catch(err => console.error(err))
+    }
+
     const open = async (bookmark) => {
-        if (bookmark.type === 1)
+        if (bookmark.type === 1) {
             window.open(bookmark.url, "_blank")
-        else {
-            setBookmarkId(bookmarkId.concat([bookmark.id]))
-            setTitle(title.concat([bookmark.title]))
-        }
+            window.close()
+        } else
+            setHistory(history.concat(getBookmarkObject(bookmark.id, bookmark.title)))
     }
 
     const back = async () => {
-        setBookmarkId(bookmarkId.slice(0, bookmarkId.length - 1))
-        setTitle(title.slice(0, title.length - 1))
+        if (openForm) setOpenForm(false)
+        else setHistory(history.slice(0, history.length - 1))
+    }
+
+    const getFunctionName = () => {
+        return activateTab.id ? 'Edit bookmark' : 'Add New Bookmark';
     }
 
     return (
-        <div className="App">
+        <Container>
             <Header>
                 {
-                    bookmarkId.length > 1 &&
+                    (history.length > 1 || openForm) &&
                     <BackButton onClick={back}><BackIcon/></BackButton>
                 }
-                {
-                    <FolderName>{title[title.length - 1]}</FolderName>
-                }
+                <FolderName>
+                    {
+                        !openForm
+                            ? history[history.length - 1].title
+                            : getFunctionName()
+                    }
+                </FolderName>
             </Header>
+            {
+                (history.length <= 1 && !openForm) &&
+                <Fragment>
+                    <Divider/>
+                    <EditButton onClick={() => setOpenForm(true)}>
+                        {
+                            getFunctionName()
+                        }
+                    </EditButton>
+                </Fragment>
+            }
             <Divider/>
-            <Content>
-                {
-                    bookmark && bookmark.map(o => {
-                        return (
-                            <Bookmark title={o.title}
-                                      onClick={() => open(o)}>
-                                <Icon>
-                                    {
-                                        o.type === 1
-                                            ? <img height="16"
-                                                   width="16"
-                                                   src={`https://icons.duckduckgo.com/ip3/${(new URL(o.url)).hostname}.ico`}
-                                                   alt={''}/>
-                                            : <MdFolder/>
-                                    }
-                                </Icon>
-                                <Title>{o.title}</Title>
-                            </Bookmark>
-                        )
-                    })
-                }
-            </Content>
-            <Divider/>
-            <Footer onClick={() => window.open('http://localhost:8080', "_blank")}>
-                Show All Bookmarks
-            </Footer>
-        </div>
+            {
+                openForm
+                    ? <BookmarkModal currentTab={activateTab}/>
+                    : <Fragment>
+                        <Content bookmark={bookmark} open={open}/>
+                        <Divider/>
+                        <Footer history={history}/>
+                    </Fragment>
+            }
+        </Container>
     );
 }
+
+const Container = styled.div`
+  min-width: 250px;
+  max-width: 360px;
+`
 
 const Header = styled.div`
   width: 100%;
   height: 35px;
   border-radius: 5px;
+  display: flex;
   align-items: center;
   padding-top: 10px;
 `
@@ -96,7 +146,6 @@ const Header = styled.div`
 const BackButton = styled.button`
   height: 35px;
   width: 35px;
-  text-align:center;
   border: none;
   position: absolute;
   cursor:pointer;
@@ -123,51 +172,14 @@ const BackIcon = styled(MdChevronLeft)`
 `
 const FolderName = styled.div`
   max-width: calc(100% - 70px);
-  font-size: 24px;
+  font-size: 20px;
   text-align: center;
   margin: auto;
 `
 
-const Content = styled.div`
+const EditButton = styled.button`
   width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
-  border-radius: 5px;
-  cursor: pointer;
-`
-
-const Bookmark = styled.div`
-  width: inherit;
-  height: 30px;
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  
-  &:hover {
-    background-color: pink;
-    color: red;
-    border-radius: 5px;
-  }
-`
-
-const Icon = styled.div`
-    font-size:18px;
-    text-align:center;
-    width: 30px;
-    padding-top: 5px;
-`
-
-const Title = styled.div`
-    font-size: 14px;
-    width: calc(100% - 30px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`
-
-const Footer = styled.button`
-  width: 100%;
-  height: 50px;
+  height: 35px;
   text-align: center;
   outline: none;
   border: none;
