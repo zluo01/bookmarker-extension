@@ -1,55 +1,58 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import styled from "styled-components";
-import {HOST_SERVER} from "./Constant";
-import {MdChevronLeft} from "react-icons/md";
-import querystring from "querystring";
-import Content from './components/Content'
-import Footer from './components/Footer'
-import BookmarkModal from './components/BookmarkForm'
-import browser from 'webextension-polyfill'
-import useTrigger from './module'
+import React, { Fragment, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { HOST_SERVER } from './Constant';
+import { MdChevronLeft } from 'react-icons/md';
+import querystring from 'querystring';
+import Content from './components/Content';
+import Footer from './components/Footer';
+import BookmarkModal from './components/BookmarkForm';
+import browser from 'webextension-polyfill';
+import useTrigger from './module';
 
-function getBookmarkObject(id, title) {
+function getBookmarkObject (id, title) {
     return {
         id: id,
         title: title
-    }
+    };
 }
 
-function App() {
-    const [bookmark, setBookmark] = useState()
-    const [activateTab, setActiveTab] = useState({})
-    const [history, setHistory] = useState([getBookmarkObject(1, "Bookmarker")])
-    const [loading, setLoading] = useState(() => !bookmark)
+function App () {
+    const [bookmark, setBookmark] = useState();
+    const [activateTab, setActiveTab] = useState({});
+    const [history, setHistory] = useState([getBookmarkObject(1, 'Bookmarker')]);
+    const [loading, setLoading] = useState(() => !bookmark);
 
-    const [openForm, setOpenForm] = useState(false)
+    const [openForm, setOpenForm] = useState(false);
 
-    const trigger = useTrigger()
+    const trigger = useTrigger();
 
-    useEffect(() => setOpenForm(trigger), [trigger])
+    useEffect(() => setOpenForm(trigger), [trigger]);
 
-    useEffect(() => setLoading(true), [history])
+    useEffect(() => setLoading(true), [history]);
 
     useEffect(() => {
-        if (!loading && bookmark) return
+        if (!loading && bookmark) return;
         let isMounted = true;
         checkExist(isMounted);
         fetch(`${HOST_SERVER}/api/get/detail/${history[history.length - 1].id}`)
             .then(res => res.json())
             .then(bookmarks => {
                 if (isMounted) {
-                    setBookmark(bookmarks)
-                    setLoading(false)
+                    setBookmark(bookmarks);
+                    setLoading(false);
                 }
-            }).catch(err => console.error(err))
+            }).catch(err => console.error(err));
 
         return () => {
-            isMounted = false
-        }
-    })
+            isMounted = false;
+        };
+    });
 
     const checkExist = (isMount) => {
-        browser.tabs.query({active: true, currentWindow: true})
+        browser.tabs.query({
+            active: true,
+            currentWindow: true
+        })
             .then(tabs => {
                 const tab = tabs[0];
                 fetch(`${HOST_SERVER}/api/check?${querystring.stringify({
@@ -67,27 +70,31 @@ function App() {
                             });
                         }
                     })
-                    .catch(err => console.error(err))
+                    .catch(err => console.error(err));
             })
-            .catch(err => console.error(err))
-    }
+            .catch(err => console.error(err));
+    };
 
     const open = async (bookmark) => {
         if (bookmark.type === 1) {
-            window.open(bookmark.url, "_blank")
-            window.close()
-        } else
-            setHistory(history.concat(getBookmarkObject(bookmark.id, bookmark.title)))
-    }
+            window.open(bookmark.url, '_blank');
+            window.close();
+        } else {
+            setHistory(history.concat(getBookmarkObject(bookmark.id, bookmark.title)));
+        }
+    };
 
     const back = async () => {
-        if (openForm) setOpenForm(false)
-        else setHistory(history.slice(0, history.length - 1))
-    }
+        if (openForm) {
+            setOpenForm(false);
+        } else {
+            setHistory(history.slice(0, history.length - 1));
+        }
+    };
 
     const getFunctionName = () => {
         return activateTab.id ? 'Edit bookmark' : 'Add New Bookmark';
-    }
+    };
 
     return (
         <Container>
@@ -132,7 +139,7 @@ function App() {
 const Container = styled.div`
   min-width: 250px;
   max-width: 360px;
-`
+`;
 
 const Header = styled.div`
   width: 100%;
@@ -141,7 +148,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   padding-top: 10px;
-`
+`;
 
 const BackButton = styled.button`
   height: 35px;
@@ -164,18 +171,18 @@ const BackButton = styled.button`
   &:focus {
     outline:none;
   }
-`
+`;
 
 const BackIcon = styled(MdChevronLeft)`
   height: 30px;
   width: 30px;
-`
+`;
 const FolderName = styled.div`
   max-width: calc(100% - 70px);
   font-size: 20px;
   text-align: center;
   margin: auto;
-`
+`;
 
 const EditButton = styled.button`
   width: 100%;
@@ -190,11 +197,11 @@ const EditButton = styled.button`
   &:hover {
     background-color: blanchedalmond;
   }
-`
+`;
 
 export const Divider = styled.hr`
   border-top: 1px solid #bbb;
   border-radius: 5px;
-`
+`;
 
 export default App;

@@ -1,90 +1,100 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import {ErrorMessage, Field, Form, Formik} from 'formik';
-import * as Yup from "yup";
-import styled from "styled-components";
-import querystring from "querystring";
-import {HOST_SERVER} from "../../Constant";
+import React, { Fragment, useEffect, useState } from 'react';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import * as Yup from 'yup';
+import styled from 'styled-components';
+import querystring from 'querystring';
+import { HOST_SERVER } from '../../Constant';
+import PropTypes from 'prop-types';
 
-const Index = ({currentTab}) => {
-    const [folder, setFolder] = useState()
-    const [loading, setLoading] = useState(() => !folder)
+const Index = ({ currentTab }) => {
+    const [folder, setFolder] = useState();
+    const [loading, setLoading] = useState(() => !folder);
 
     useEffect(() => {
-        if (!loading && folder) return
+        if (!loading && folder) return;
         let isMounted = true;
         fetch(`${HOST_SERVER}/api/get/folder`)
             .then(res => res.json())
             .then(folders => {
                 if (isMounted) {
-                    setFolder(folders)
-                    setLoading(false)
+                    setFolder(folders);
+                    setLoading(false);
                 }
-            })
+            });
 
         return () => {
-            isMounted = false
-        }
-    })
+            isMounted = false;
+        };
+    });
 
     const closePopup = async () => {
         if (currentTab.id) {
-            await fetch(`${HOST_SERVER}/api/delete/bookmark/${currentTab.id}`)
+            await fetch(`${HOST_SERVER}/api/delete/bookmark/${currentTab.id}`);
         }
         window.close();
-    }
+    };
 
-    const handleSubmit = ({Name, Folder}) => {
+    const handleSubmit = ({ Name, Folder }) => {
         let request;
-        if (!currentTab.id) {  // new bookmark
+        if (!currentTab.id) { // new bookmark
             request = fetch(`${HOST_SERVER}/api/add/bookmark?${querystring.stringify({
                 id: Folder,
                 name: Name,
                 url: currentTab.url
-            })}`)
+            })}`);
         } else { // update old bookmark
             request = fetch(`${HOST_SERVER}/api/extension/update?${querystring.stringify({
                 bookmarkId: currentTab.id,
                 newFolderId: Folder,
                 newBookmarkName: Name
-            })}`)
+            })}`);
         }
-        request.then(() => closePopup()).catch(err => console.error(err))
-    }
+        request.then(() => closePopup()).catch(err => console.error(err));
+    };
 
     const generateFolderOptions = () => {
-        const options = [{id: 1, title: "Bookmarker"}]
-        options.push(...getAllFolder(folder))
+        const options = [{
+            id: 1,
+            title: 'Bookmarker'
+        }];
+        options.push(...getAllFolder(folder));
         return options.map(o =>
             <option key={o.id}
                     value={o.id}
                     label={o.title}
                     selected={o.id === currentTab.parent}/>
-        )
-    }
+        );
+    };
 
     const getAllFolder = (node) => {
-        const folders = []
+        const folders = [];
         node.forEach(o => {
-            folders.push({id: o.id, title: o.title})
+            folders.push({
+                id: o.id,
+                title: o.title
+            });
             if (o.children.length > 0) {
-                folders.push(...getAllFolder(o.children))
+                folders.push(...getAllFolder(o.children));
             }
-        })
-        return folders
-    }
+        });
+        return folders;
+    };
 
     return (
         <Fragment>
             {
                 folder && <Formik
-                    initialValues={{Name: currentTab.title, Folder: 1}}
+                    initialValues={{
+                        Name: currentTab.title,
+                        Folder: 1
+                    }}
                     onSubmit={async (values) => handleSubmit(values)}
                     validationSchema={Yup.object().shape({
-                        Name: Yup.string().required("Required"),
+                        Name: Yup.string().required('Required'),
                         Folder: Yup.string().required('Required!')
                     })}
                 >
-                    {({handleChange, isSubmitting}) => {
+                    {({ handleChange, isSubmitting }) => {
                         return (
                             <StyledForm>
                                 <StyledInput>
@@ -119,14 +129,18 @@ const Index = ({currentTab}) => {
                                     </SubmitButton>
                                 </ButtonGroup>
                             </StyledForm>
-                        )
+                        );
                     }}
                 </Formik>
             }
 
         </Fragment>
-    )
-}
+    );
+};
+
+Index.propTypes = {
+    currentTab: PropTypes.object
+};
 
 const StyledForm = styled(Form)`
   width: 320px;
@@ -135,19 +149,19 @@ const StyledForm = styled(Form)`
   flex-flow: column nowrap;
   align-items: center;
   justify-content: space-around;
-`
+`;
 
 const StyledInput = styled.div`
   width: inherit;
   height: 50px;
   display: flex;
   flex-flow: column nowrap;
-`
+`;
 
 const InputLabel = styled.span`
   font-size: 16px;
   width:50px;
-`
+`;
 
 const InputFiled = styled.div`
   width: inherit;
@@ -156,7 +170,7 @@ const InputFiled = styled.div`
   flex-flow: row nowrap;
   justify-content: space-around;
   align-items: center;
-`
+`;
 
 const StyledField = styled(Field)`
   height: 28px;
@@ -175,17 +189,17 @@ const StyledField = styled(Field)`
   .error {
     border-color: red;
   }
-`
+`;
 
 const StyledSelect = styled(StyledField)`
   width: 220px;
   height: 36px;
-`
+`;
 
 const StyledError = styled(ErrorMessage)`
   color: red;
   margin-top: .25rem;
-`
+`;
 
 const ButtonGroup = styled.div`
   height: 45px;
@@ -194,7 +208,7 @@ const ButtonGroup = styled.div`
   flex-flow: row nowrap;
   justify-content: flex-end;
   margin: auto;
-`
+`;
 
 const SubmitButton = styled.button`
   max-width: 150px;
@@ -220,11 +234,11 @@ const SubmitButton = styled.button`
     border: 1px solid #aaa;
     color: #555;
   }
-`
+`;
 
 const CancelButton = styled(SubmitButton)`
   background-color: gray;
   margin-right: .5rem;
-`
+`;
 
-export default Index
+export default Index;

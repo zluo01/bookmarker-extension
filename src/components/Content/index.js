@@ -1,8 +1,9 @@
-import React, {Fragment} from 'react';
-import styled from "styled-components";
-import {MdFolder} from "react-icons/md";
+import React, { Fragment } from 'react';
+import styled from 'styled-components';
+import { MdFolder } from 'react-icons/md';
+import PropTypes from 'prop-types';
 
-const Index = ({bookmark, open}) => {
+const Index = ({ bookmark, open }) => {
     return (
         <Content>
             <Fragment>
@@ -24,13 +25,18 @@ const Index = ({bookmark, open}) => {
                                 </Icon>
                                 <Title>{o.title}</Title>
                             </Bookmark>
-                        )
+                        );
                     })
                 }
             </Fragment>
         </Content>
-    )
-}
+    );
+};
+
+Index.propTypes = {
+    bookmark: PropTypes.array,
+    open: PropTypes.func
+};
 
 const Content = styled.ul`
   width: 100%;
@@ -39,7 +45,7 @@ const Content = styled.ul`
   cursor: pointer;
   padding: 0;
   margin: 0;
-`
+`;
 
 const Bookmark = styled.li`
   width: inherit;
@@ -53,14 +59,14 @@ const Bookmark = styled.li`
     color: red;
     border-radius: 5px;
   }
-`
+`;
 
 const Icon = styled.div`
     font-size:18px;
     text-align:center;
     width: 30px;
     padding-top: 5px;
-`
+`;
 
 const Title = styled.div`
     font-size: 14px;
@@ -68,6 +74,6 @@ const Title = styled.div`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-`
+`;
 
-export default Index
+export default Index;

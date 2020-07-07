@@ -1,18 +1,23 @@
-import styled from "styled-components";
-import React from "react";
-import {HOST_SERVER} from "../../Constant";
+import styled from 'styled-components';
+import React from 'react';
+import { HOST_SERVER } from '../../Constant';
+import PropTypes from 'prop-types';
 
-const Index = ({history}) => {
+const Index = ({ history }) => {
     return (
         <Footer
             onClick={() => {
-                window.open(HOST_SERVER.concat(history.length > 1 ? `/?id=${history[history.length - 1].id}` : ''), "_blank")
-                window.close()
+                window.open(HOST_SERVER.concat(history.length > 1 ? `/?id=${history[history.length - 1].id}` : ''), '_blank');
+                window.close();
             }}>
             Show All Bookmarks
         </Footer>
-    )
-}
+    );
+};
+
+Index.propTypes = {
+    history: PropTypes.array
+};
 
 const Footer = styled.button`
   width: 100%;
@@ -27,6 +32,6 @@ const Footer = styled.button`
   &:hover {
     background-color: blanchedalmond;
   }
-`
+`;
 
-export default Index
+export default Index;
