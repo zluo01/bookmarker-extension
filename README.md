@@ -1,4 +1,4 @@
-##Bookmarker-extension
+## Bookmarker-extension
 
 Web Extension for [Bookmarker](https://github.com/zluo01/bookmarker) which is a simple browser independent bookmark manager.
 Currently, support Firefox and Chrome.
