@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { HOST_SERVER } from '../Constant';
+import { HOST_SERVER } from '../constant';
 
 browser.commands.onCommand.addListener(function (command) {
     if (command === 'open_manager') {

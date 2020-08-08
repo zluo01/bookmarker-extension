@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import React from 'react';
-import { HOST_SERVER } from '../../Constant';
+import { HOST_SERVER } from '../../constant';
 import PropTypes from 'prop-types';
 
 const Index = ({ history }) => {

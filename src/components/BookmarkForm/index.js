@@ -3,29 +3,18 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import styled from 'styled-components';
 import querystring from 'querystring';
-import { HOST_SERVER } from '../../Constant';
+import { HOST_SERVER } from '../../constant';
 import PropTypes from 'prop-types';
 
 const Index = ({ currentTab }) => {
     const [folder, setFolder] = useState();
-    const [loading, setLoading] = useState(() => !folder);
 
     useEffect(() => {
-        if (!loading && folder) return;
-        let isMounted = true;
         fetch(`${HOST_SERVER}/api/get/folder`)
             .then(res => res.json())
-            .then(folders => {
-                if (isMounted) {
-                    setFolder(folders);
-                    setLoading(false);
-                }
-            });
-
-        return () => {
-            isMounted = false;
-        };
-    });
+            .then(folders => setFolder(folders))
+            .catch(error => console.error(error));
+    }, [folder]);
 
     const closePopup = async () => {
         if (currentTab.id) {
@@ -133,7 +122,6 @@ const Index = ({ currentTab }) => {
                     }}
                 </Formik>
             }
-
         </Fragment>
     );
 };

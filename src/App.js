@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { HOST_SERVER } from './Constant';
+import { HOST_SERVER } from './constant';
 import { MdChevronLeft } from 'react-icons/md';
 import querystring from 'querystring';
 import Content from './components/Content';
@@ -20,7 +20,6 @@ function App () {
     const [bookmark, setBookmark] = useState();
     const [activateTab, setActiveTab] = useState({});
     const [history, setHistory] = useState([getBookmarkObject(1, 'Bookmarker')]);
-    const [loading, setLoading] = useState(() => !bookmark);
 
     const [openForm, setOpenForm] = useState(false);
 
@@ -28,51 +27,34 @@ function App () {
 
     useEffect(() => setOpenForm(trigger), [trigger]);
 
-    useEffect(() => setLoading(true), [history]);
-
     useEffect(() => {
-        if (!loading && bookmark) return;
-        let isMounted = true;
-        checkExist(isMounted);
+        checkExist();
         fetch(`${HOST_SERVER}/api/get/detail/${history[history.length - 1].id}`)
             .then(res => res.json())
-            .then(bookmarks => {
-                if (isMounted) {
-                    setBookmark(bookmarks);
-                    setLoading(false);
-                }
-            }).catch(err => console.error(err));
+            .then(bookmarks => setBookmark(bookmarks))
+            .catch(err => console.error(err));
+    }, [history]);
 
-        return () => {
-            isMounted = false;
-        };
-    });
-
-    const checkExist = (isMount) => {
+    const checkExist = () => {
         browser.tabs.query({
             active: true,
             currentWindow: true
-        })
-            .then(tabs => {
-                const tab = tabs[0];
-                fetch(`${HOST_SERVER}/api/check?${querystring.stringify({
-                    title: tab.title,
-                    url: tab.url
-                })}`)
-                    .then(res => res.json())
-                    .then((result) => {
-                        if (isMount) {
-                            setActiveTab({
-                                id: result.length > 0 && result[0][0],
-                                title: tab.title,
-                                url: tab.url,
-                                parent: result.length > 0 && result[0][1]
-                            });
-                        }
-                    })
-                    .catch(err => console.error(err));
-            })
-            .catch(err => console.error(err));
+        }).then(tabs => {
+            const tab = tabs[0];
+            fetch(`${HOST_SERVER}/api/check?${querystring.stringify({
+                title: tab.title,
+                url: tab.url
+            })}`)
+                .then(res => res.json())
+                .then((result) =>
+                    setActiveTab({
+                        id: result.length > 0 && result[0][0],
+                        title: tab.title,
+                        url: tab.url,
+                        parent: result.length > 0 && result[0][1]
+                    }))
+                .catch(err => console.error(err));
+        }).catch(err => console.error(err));
     };
 
     const open = async (bookmark) => {
