@@ -41,7 +41,7 @@ function App () {
             currentWindow: true
         }).then(tabs => {
             const tab = tabs[0];
-            fetch(`${HOST_SERVER}/api/check?${querystring.stringify({
+            fetch(`${HOST_SERVER}/api/extension/check?${querystring.stringify({
                 title: tab.title,
                 url: tab.url
             })}`)
