@@ -41,34 +41,6 @@ const Index = ({ currentTab }) => {
         request.then(() => closePopup()).catch(err => console.error(err));
     };
 
-    const generateFolderOptions = () => {
-        const options = [{
-            id: 1,
-            title: 'Bookmarker'
-        }];
-        options.push(...getAllFolder(folder));
-        return options.map(o =>
-            <option key={o.id}
-                    value={o.id}
-                    label={o.title}
-                    selected={o.id === currentTab.parent}/>
-        );
-    };
-
-    const getAllFolder = (node) => {
-        const folders = [];
-        node.forEach(o => {
-            folders.push({
-                id: o.id,
-                title: o.title
-            });
-            if (o.children.length > 0) {
-                folders.push(...getAllFolder(o.children));
-            }
-        });
-        return folders;
-    };
-
     return (
         <Fragment>
             {
@@ -101,7 +73,10 @@ const Index = ({ currentTab }) => {
                                                       onChange={handleChange}
                                         >
                                             {
-                                                generateFolderOptions()
+                                                folder.map(o => <option key={o.id}
+                                                                        value={o.id}
+                                                                        label={o.title}
+                                                                        selected={o.id === currentTab.parent}/>)
                                             }
                                         </StyledSelect>
                                     </InputFiled>
