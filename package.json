@@ -10,7 +10,7 @@
     "react-icons": "3.10.0",
     "styled-components": "5.1.1",
     "yup": "0.29.3",
-    "snyk": "1.373.1"
+    "snyk": "1.374.0"
   },
   "devDependencies": {
     "eslint-config-standard": "14.1.1",
