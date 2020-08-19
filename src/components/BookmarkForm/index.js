@@ -47,7 +47,7 @@ const Index = ({ currentTab }) => {
                 folder && <Formik
                     initialValues={{
                         Name: currentTab.title,
-                        Folder: 1
+                        Folder: currentTab.parent ? folder.filter(o => o.id === currentTab.parent)[0].id : folder[0].id
                     }}
                     onSubmit={async (values) => handleSubmit(values)}
                     validationSchema={Yup.object().shape({
