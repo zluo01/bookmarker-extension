@@ -5,8 +5,8 @@
   "dependencies": {
     "formik": "2.2.0",
     "prop-types": "15.7.2",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "react-icons": "3.11.0",
     "styled-components": "5.2.0",
     "yup": "0.29.3",
