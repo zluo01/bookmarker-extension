@@ -6,11 +6,7 @@
     "48": "logo192.png",
     "128": "logo512.png"
   },
-  "permissions": [
-    "http://localhost/*",
-    "activeTab",
-    "tabs"
-  ],
+  "permissions": ["http://localhost/*", "activeTab", "tabs"],
   "commands": {
     "open_manager": {
       "description": "Open bookmarker server main page"
@@ -20,12 +16,10 @@
     }
   },
   "background": {
-    "scripts": [
-      "scripts/background/index.js"
-    ]
+    "scripts": ["scripts/background/index.js"]
   },
   "manifest_version": 2,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Bookmarker"

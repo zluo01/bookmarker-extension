@@ -5,16 +5,16 @@ Currently, support Firefox and Chrome.
 
 ### Installation
 
- - git clone project
- - npm complete
- 
+- git clone project
+- npm complete
+
 #### Chrome
 
- - Enable Developer Mode
- - Load zip file under artifacts
-  
+- Enable Developer Mode
+- Load zip file under artifacts
+
 #### Firefox
 
- - To persist the extension on restart
-    - Login to [Add-On](https://addons.mozilla.org/en-US/firefox/extensions/) and submit an add-on
- - install extension in about::debug
+- To persist the extension on restart
+  - Login to [Add-On](https://addons.mozilla.org/en-US/firefox/extensions/) and submit an add-on
+- install extension in about::debug

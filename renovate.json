@@ -1,19 +1,9 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "schedule": [
-    "after 10pm and before 5am on every weekday",
-    "every weekend"
-  ],
+  "extends": ["config:base"],
+  "schedule": ["after 10pm and before 5am on every weekday", "every weekend"],
   "packageRules": [
     {
-      "updateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
+      "updateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     }
   ]

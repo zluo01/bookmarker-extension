@@ -4,38 +4,39 @@ import { MdFolder } from 'react-icons/md';
 import PropTypes from 'prop-types';
 
 const Index = ({ bookmark, open }) => {
-    return (
-        <Content>
-            <Fragment>
-                {
-                    bookmark && bookmark.map(o => {
-                        return (
-                            <Bookmark key={o.id}
-                                      title={o.title}
-                                      onClick={() => open(o)}>
-                                <Icon>
-                                    {
-                                        o.type === 1
-                                            ? <img height="16"
-                                                   width="16"
-                                                   src={`https://icons.duckduckgo.com/ip3/${(new URL(o.url)).hostname}.ico`}
-                                                   alt={''}/>
-                                            : <MdFolder/>
-                                    }
-                                </Icon>
-                                <Title>{o.title}</Title>
-                            </Bookmark>
-                        );
-                    })
-                }
-            </Fragment>
-        </Content>
-    );
+  return (
+    <Content>
+      <Fragment>
+        {bookmark &&
+          bookmark.map((o) => {
+            return (
+              <Bookmark key={o.id} title={o.title} onClick={() => open(o)}>
+                <Icon>
+                  {o.type === 1 ? (
+                    <img
+                      height="16"
+                      width="16"
+                      src={`https://icons.duckduckgo.com/ip3/${
+                        new URL(o.url).hostname
+                      }.ico`}
+                      alt={''}
+                    />
+                  ) : (
+                    <MdFolder />
+                  )}
+                </Icon>
+                <Title>{o.title}</Title>
+              </Bookmark>
+            );
+          })}
+      </Fragment>
+    </Content>
+  );
 };
 
 Index.propTypes = {
-    bookmark: PropTypes.array,
-    open: PropTypes.func
+  bookmark: PropTypes.array,
+  open: PropTypes.func,
 };
 
 const Content = styled.ul`
@@ -53,7 +54,7 @@ const Bookmark = styled.li`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  
+
   &:hover {
     background-color: pink;
     color: red;
@@ -62,18 +63,18 @@ const Bookmark = styled.li`
 `;
 
 const Icon = styled.div`
-    font-size:18px;
-    text-align:center;
-    width: 30px;
-    padding-top: 5px;
+  font-size: 18px;
+  text-align: center;
+  width: 30px;
+  padding-top: 5px;
 `;
 
 const Title = styled.div`
-    font-size: 14px;
-    width: calc(100% - 30px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: 14px;
+  width: calc(100% - 30px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export default Index;

@@ -4,19 +4,25 @@ import { HOST_SERVER } from '../../constant';
 import PropTypes from 'prop-types';
 
 const Index = ({ history }) => {
-    return (
-        <Footer
-            onClick={() => {
-                window.open(HOST_SERVER.concat(history.length > 1 ? `/?id=${history[history.length - 1].id}` : ''), '_blank');
-                window.close();
-            }}>
-            Show All Bookmarks
-        </Footer>
-    );
+  return (
+    <Footer
+      onClick={() => {
+        window.open(
+          HOST_SERVER.concat(
+            history.length > 1 ? `/?id=${history[history.length - 1].id}` : ''
+          ),
+          '_blank'
+        );
+        window.close();
+      }}
+    >
+      Show All Bookmarks
+    </Footer>
+  );
 };
 
 Index.propTypes = {
-    history: PropTypes.array
+  history: PropTypes.array,
 };
 
 const Footer = styled.button`
@@ -28,7 +34,7 @@ const Footer = styled.button`
   text-decoration: none;
   border-radius: 5px;
   cursor: pointer;
-  
+
   &:hover {
     background-color: blanchedalmond;
   }
