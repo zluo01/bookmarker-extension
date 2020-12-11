@@ -9,7 +9,7 @@
     "react-dom": "17.0.1",
     "react-icons": "4.1.0",
     "styled-components": "5.2.1",
-    "yup": "0.32.6",
+    "yup": "0.32.8",
     "snyk": "1.436.0"
   },
   "devDependencies": {
