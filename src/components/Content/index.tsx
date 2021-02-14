@@ -1,14 +1,19 @@
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import { MdFolder } from 'react-icons/md';
-import PropTypes from 'prop-types';
+import { IBookmark } from '../../constant';
 
-const Index = ({ bookmark, open }) => {
+interface IContent {
+  bookmark?: IBookmark[];
+  open: (bookmark: IBookmark) => void;
+}
+
+function Index({ bookmark, open }: IContent): JSX.Element {
   return (
     <Content>
       <Fragment>
         {bookmark &&
-          bookmark.map((o) => {
+          bookmark.map(o => {
             return (
               <Bookmark key={o.id} title={o.title} onClick={() => open(o)}>
                 <Icon>
@@ -32,12 +37,7 @@ const Index = ({ bookmark, open }) => {
       </Fragment>
     </Content>
   );
-};
-
-Index.propTypes = {
-  bookmark: PropTypes.array,
-  open: PropTypes.func,
-};
+}
 
 const Content = styled.ul`
   width: 100%;
@@ -56,8 +56,8 @@ const Bookmark = styled.li`
   align-items: center;
 
   &:hover {
-    background-color: pink;
-    color: red;
+    background-color: ${props => props.theme.contentHover.backgroundColor};
+    color: ${props => props.theme.contentHover.color};
     border-radius: 5px;
   }
 `;

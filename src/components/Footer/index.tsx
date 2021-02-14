@@ -1,9 +1,12 @@
 import styled from 'styled-components';
 import React from 'react';
-import { HOST_SERVER } from '../../constant';
-import PropTypes from 'prop-types';
+import { HOST_SERVER, IHistory } from '../../constant';
 
-const Index = ({ history }) => {
+interface IFooter {
+  history: IHistory[];
+}
+
+function Index({ history }: IFooter): JSX.Element {
   return (
     <Footer
       onClick={() => {
@@ -19,11 +22,7 @@ const Index = ({ history }) => {
       Show All Bookmarks
     </Footer>
   );
-};
-
-Index.propTypes = {
-  history: PropTypes.array,
-};
+}
 
 const Footer = styled.button`
   width: 100%;
@@ -34,9 +33,10 @@ const Footer = styled.button`
   text-decoration: none;
   border-radius: 5px;
   cursor: pointer;
+  background-color: ${props => props.theme.button.backgroundColor};
 
   &:hover {
-    background-color: blanchedalmond;
+    background-color: ${props => props.theme.button.hoverColor};
   }
 `;
 

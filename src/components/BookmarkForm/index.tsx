@@ -1,50 +1,57 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import * as Yup from 'yup';
 import styled from 'styled-components';
 import querystring from 'querystring';
-import { HOST_SERVER } from '../../constant';
-import PropTypes from 'prop-types';
+import { HOST_SERVER, IFolder, ITab } from '../../constant';
 
-const Index = ({ currentTab }) => {
-  const [folder, setFolder] = useState();
+interface IBookmarkModal {
+  currentTab?: ITab;
+}
+
+interface IBookmarkForm {
+  name?: string;
+  folder?: string;
+}
+
+function Index({ currentTab }: IBookmarkModal): JSX.Element {
+  const [folder, setFolder] = useState<IFolder[]>();
 
   useEffect(() => {
     fetch(`${HOST_SERVER}/api/get/folder`)
-      .then((res) => res.json())
-      .then((folders) => setFolder(folders))
-      .catch((error) => console.error(error));
+      .then(res => res.json())
+      .then(folders => setFolder(folders))
+      .catch(error => console.error(error));
   }, [folder]);
 
   const closePopup = async () => {
-    if (currentTab.id) {
+    if (currentTab?.id) {
       await fetch(`${HOST_SERVER}/api/delete/bookmark/${currentTab.id}`);
     }
     window.close();
   };
 
-  const handleSubmit = ({ Name, Folder }) => {
+  const handleSubmit = ({ name, folder }: IBookmarkForm) => {
     let request;
-    if (!currentTab.id) {
+    if (!currentTab?.id) {
       // new bookmark
       request = fetch(
         `${HOST_SERVER}/api/add/bookmark?${querystring.stringify({
-          id: Folder,
-          name: Name,
-          url: currentTab.url,
+          id: folder,
+          name: name,
+          url: currentTab?.url,
         })}`
       );
     } else {
       // update old bookmark
       request = fetch(
         `${HOST_SERVER}/api/extension/update?${querystring.stringify({
-          bookmarkId: currentTab.id,
-          newFolderId: Folder,
-          newBookmarkName: Name,
+          bookmarkId: currentTab?.id,
+          newFolderId: folder,
+          newBookmarkName: name,
         })}`
       );
     }
-    request.then(() => closePopup()).catch((err) => console.error(err));
+    request.then(() => closePopup()).catch(err => console.error(err));
   };
 
   return (
@@ -52,16 +59,12 @@ const Index = ({ currentTab }) => {
       {folder && (
         <Formik
           initialValues={{
-            Name: currentTab.title,
-            Folder: currentTab.parent
-              ? folder.filter((o) => o.id === currentTab.parent)[0].id
+            Name: currentTab?.title,
+            Folder: currentTab?.parent
+              ? folder.filter(o => o.id === currentTab.parent)[0].id
               : folder[0].id,
           }}
-          onSubmit={async (values) => handleSubmit(values)}
-          validationSchema={Yup.object().shape({
-            Name: Yup.string().required('Required'),
-            Folder: Yup.string().required('Required!'),
-          })}
+          onSubmit={async (values: IBookmarkForm) => handleSubmit(values)}
         >
           {({ handleChange, isSubmitting }) => {
             return (
@@ -81,12 +84,12 @@ const Index = ({ currentTab }) => {
                       name="Folder"
                       onChange={handleChange}
                     >
-                      {folder.map((o) => (
+                      {folder.map(o => (
                         <option
                           key={o.id}
                           value={o.id}
                           label={o.title}
-                          selected={o.id === currentTab.parent}
+                          selected={o.id === currentTab?.parent}
                         />
                       ))}
                     </StyledSelect>
@@ -99,7 +102,7 @@ const Index = ({ currentTab }) => {
                     disabled={isSubmitting}
                     onClick={closePopup}
                   >
-                    {!currentTab.id ? 'Cancel' : 'Remove'}
+                    {!currentTab?.id ? 'Cancel' : 'Remove'}
                   </CancelButton>
                   <SubmitButton type="submit" disabled={isSubmitting}>
                     Submit
@@ -112,11 +115,7 @@ const Index = ({ currentTab }) => {
       )}
     </Fragment>
   );
-};
-
-Index.propTypes = {
-  currentTab: PropTypes.object,
-};
+}
 
 const StyledForm = styled(Form)`
   width: 320px;
@@ -192,7 +191,6 @@ const SubmitButton = styled.button`
   padding: 8px 16px;
   border-style: none;
   border-radius: 5px;
-  background-color: #08c;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
   font-size: 16px;
   font-weight: 500;
@@ -200,6 +198,11 @@ const SubmitButton = styled.button`
   cursor: pointer;
   outline: none;
   -webkit-appearance: none;
+  background-color: ${props => props.theme.button.backgroundColor};
+
+  &:hover {
+    background-color: ${props => props.theme.button.hoverColor};
+  }
 
   :disabled {
     opacity: 0.5;
@@ -214,8 +217,12 @@ const SubmitButton = styled.button`
 `;
 
 const CancelButton = styled(SubmitButton)`
-  background-color: gray;
+  background-color: #808080;
   margin-right: 0.5rem;
+
+  &:hover {
+    background-color: rgba(128, 128, 128, 0.8);
+  }
 `;
 
 export default Index;
