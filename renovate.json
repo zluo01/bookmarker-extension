@@ -7,7 +7,5 @@
       "automerge": true
     }
   ],
-  "postUpdateOptions": [
-    "npmDedupe"
-  ]
+  "postUpdateOptions": ["npmDedupe"]
 }

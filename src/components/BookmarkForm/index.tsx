@@ -9,8 +9,8 @@ interface IBookmarkModal {
 }
 
 interface IBookmarkForm {
-  name?: string;
-  folder?: string;
+  Name?: string;
+  Folder: number;
 }
 
 function Index({ currentTab }: IBookmarkModal): JSX.Element {
@@ -30,14 +30,14 @@ function Index({ currentTab }: IBookmarkModal): JSX.Element {
     window.close();
   };
 
-  const handleSubmit = ({ name, folder }: IBookmarkForm) => {
+  const handleSubmit = ({ Name, Folder }: IBookmarkForm) => {
     let request;
     if (!currentTab?.id) {
       // new bookmark
       request = fetch(
         `${HOST_SERVER}/api/add/bookmark?${querystring.stringify({
-          id: folder,
-          name: name,
+          id: Folder,
+          name: Name,
           url: currentTab?.url,
         })}`
       );
@@ -46,8 +46,8 @@ function Index({ currentTab }: IBookmarkModal): JSX.Element {
       request = fetch(
         `${HOST_SERVER}/api/extension/update?${querystring.stringify({
           bookmarkId: currentTab?.id,
-          newFolderId: folder,
-          newBookmarkName: name,
+          newFolderId: Folder,
+          newBookmarkName: Name,
         })}`
       );
     }
