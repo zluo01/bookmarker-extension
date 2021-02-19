@@ -2,9 +2,8 @@
   "short_name": "Bookmarker Extension",
   "name": "Bookmarker Extension",
   "icons": {
-    "16": "favicon.ico",
-    "48": "logo192.png",
-    "128": "logo512.png"
+    "48": "icon.png",
+    "128": "icon128.png"
   },
   "permissions": ["http://localhost/*", "activeTab", "tabs"],
   "commands": {
@@ -19,7 +18,7 @@
     "scripts": ["scripts/background/index.js"]
   },
   "manifest_version": 2,
-  "version": "0.2.6",
+  "version": "0.2.7",
   "browser_action": {
     "default_popup": "index.html",
     "default_title": "Bookmarker"
