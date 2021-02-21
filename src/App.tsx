@@ -4,12 +4,12 @@ import { GlobalStyles } from './styles/globalStyles';
 import { lightTheme, darkTheme, DARK, LIGHT } from './styles/Themes';
 import { HOST_SERVER, IBookmark, IHistory, ITab } from './constant';
 import { MdChevronLeft } from 'react-icons/md';
-import querystring from 'querystring';
 import Content from './components/Content';
 import Footer from './components/Footer';
 import BookmarkModal from './components/BookmarkForm';
 import { browser } from 'webextension-polyfill-ts';
 import useTrigger from './module';
+import { checkBookmarkExist } from './helper';
 
 const defaultHistory: IHistory = {
   id: 1,
@@ -54,12 +54,7 @@ function App(): JSX.Element {
       })
       .then(tabs => {
         const tab = tabs[0];
-        fetch(
-          `${HOST_SERVER}/api/extension/check?${querystring.stringify({
-            title: tab.title,
-            url: tab.url,
-          })}`
-        )
+        checkBookmarkExist(tab.title, tab.url)
           .then(res => res.json())
           .then(result =>
             setActiveTab({
