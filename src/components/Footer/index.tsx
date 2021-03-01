@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import React from 'react';
 import { HOST_SERVER, IHistory } from '../../constant';
+import { createTab } from '../../browser';
 
 interface IFooter {
   history: IHistory[];
@@ -9,15 +9,15 @@ interface IFooter {
 function Index({ history }: IFooter): JSX.Element {
   return (
     <Footer
-      onClick={() => {
-        window.open(
+      onClick={() =>
+        createTab(
           HOST_SERVER.concat(
             history.length > 1 ? `/?id=${history[history.length - 1].id}` : ''
-          ),
-          '_blank'
-        );
-        window.close();
-      }}
+          )
+        )
+          .then(() => window.close())
+          .catch(err => console.error(err))
+      }
     >
       Show All Bookmarks
     </Footer>

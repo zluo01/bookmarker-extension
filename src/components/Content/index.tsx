@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import styled from 'styled-components';
 import { MdFolder } from 'react-icons/md';
 import { IBookmark } from '../../constant';

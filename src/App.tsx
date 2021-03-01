@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 import { GlobalStyles } from './styles/globalStyles';
 import { lightTheme, darkTheme, DARK, LIGHT } from './styles/Themes';
@@ -7,9 +7,9 @@ import { MdChevronLeft } from 'react-icons/md';
 import Content from './components/Content';
 import Footer from './components/Footer';
 import BookmarkModal from './components/BookmarkForm';
-import { browser } from 'webextension-polyfill-ts';
 import useTrigger from './module';
 import { checkBookmarkExist } from './helper';
+import { createTab, getCurrentTabInfo } from './browser';
 
 const defaultHistory: IHistory = {
   id: 1,
@@ -47,13 +47,8 @@ function App(): JSX.Element {
   });
 
   function checkExist() {
-    browser.tabs
-      .query({
-        active: true,
-        currentWindow: true,
-      })
-      .then(tabs => {
-        const tab = tabs[0];
+    getCurrentTabInfo()
+      .then(tab => {
         checkBookmarkExist(tab.title, tab.url)
           .then(res => res.json())
           .then(result =>
@@ -71,8 +66,9 @@ function App(): JSX.Element {
 
   async function open(bookmark: IBookmark) {
     if (bookmark.type === 1) {
-      window.open(bookmark.url, '_blank');
-      window.close();
+      createTab(bookmark.url)
+        .then(() => window.close())
+        .catch(err => console.error(err));
     } else {
       setHistory(history.concat({ id: bookmark.id, title: bookmark.title }));
     }
@@ -135,6 +131,11 @@ const Container = styled.div`
 `;
 
 const Header = styled.div`
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: ${props => props.theme.body};
   width: 100%;
   height: 35px;
   border-radius: 5px;

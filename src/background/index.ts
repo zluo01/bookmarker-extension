@@ -1,10 +1,11 @@
 import { browser, Tabs } from 'webextension-polyfill-ts';
 import { HOST_SERVER } from '../constant';
 import { checkBookmarkExist } from '../helper';
+import { createTab, getTabInfo, updateBadge } from '../browser';
 
 browser.commands.onCommand.addListener((command: string) => {
   if (command === 'open_manager') {
-    browser.tabs.create({ url: HOST_SERVER }).catch(err => console.error(err));
+    createTab(HOST_SERVER).catch(err => console.error(err));
   }
 
   if (command === 'add_bookmark') {
@@ -22,23 +23,10 @@ function sendTriggerMessage(msg: string) {
 }
 
 function handleActivated(activeInfo: Tabs.OnActivatedActiveInfoType) {
-  browser.tabs
-    .get(activeInfo.tabId)
-    .then((labInfo: Tabs.Tab) => {
-      checkBookmarkExist(labInfo.title, labInfo.url)
-        .then(res => res.json())
-        .then(result => {
-          browser.browserAction
-            .setBadgeText({
-              text: result.length > 0 ? '*' : '',
-            })
-            .catch(err => console.error(err));
-          browser.browserAction
-            .setBadgeBackgroundColor({ color: '#303030' })
-            .catch(err => console.error(err));
-        })
-        .catch(err => console.error(err));
-    })
+  getTabInfo(activeInfo.tabId)
+    .then((labInfo: Tabs.Tab) => checkBookmarkExist(labInfo.title, labInfo.url))
+    .then(res => res.json())
+    .then(result => updateBadge(result.length > 0))
     .catch(err => console.error(err));
 }
 
